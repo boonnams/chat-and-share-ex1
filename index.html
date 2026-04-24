@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAGDUN | 8-Bit Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for Light (Sky) Theme */
+        :root {
+            --bg-color: #5c94fc; /* Classic Mario sky color */
+            --cloud-color: #ffffff;
+            --text-main: #ffffff;
+            --text-card: #000000;
+            --ui-bg: #e0e0e0;
+            --highlight: #ffcc00;
+            --shadow-color: #000000;
+            --border-color: #000000;
+            --border-width: 4px;
+            --footer-bg: #000000;
+            --footer-text: #ffffff;
+        }
+
+        /* CSS Variables for Dark (Moonlight) Theme */
+        [data-theme="dark"] {
+            --bg-color: #0b1021; /* Deep night sky */
+            --cloud-color: #2c2f48; /* Dark moonlit clouds */
+            --text-main: #e0e0e0;
+            --text-card: #e0e0e0;
+            --ui-bg: #1c2035; /* Dark cards */
+            --highlight: #00ffff; /* Cyber/Nighttime cyan */
+            --shadow-color: #000000;
+            --border-color: #00ffff; /* Glowing cyan borders */
+            --footer-bg: #050814;
+            --footer-text: #00ffff;
+        }
+
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Press Start 2P', monospace;
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Pixel Typography & UI Elements */
+        h1, h2, h3 {
+            text-transform: uppercase;
+            text-shadow: 4px 4px 0px var(--shadow-color);
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 0.8rem;
+            line-height: 1.8;
+            text-shadow: 2px 2px 0px var(--shadow-color);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10; /* Keep content above clouds */
+        }
+
+        /* Animated Clouds Background */
+        .sky-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .cloud {
+            position: absolute;
+            background: var(--cloud-color);
+            width: 90px;
+            height: 30px;
+            animation: float-cloud linear infinite;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Blocky pixel cloud shapes using pseudo-elements */
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: var(--cloud-color);
+            transition: background-color 0.5s ease;
+        }
+
+        .cloud::before {
+            width: 50px;
+            height: 30px;
+            top: -20px;
+            left: 20px;
+        }
+
+        .cloud::after {
+            width: 30px;
+            height: 20px;
+            top: 30px;
+            left: 30px;
+        }
+
+        /* Cloud Variations */
+        .cloud1 { top: 10%; animation-duration: 45s; animation-delay: -10s; }
+        .cloud2 { top: 30%; animation-duration: 60s; animation-delay: -30s; transform: scale(1.5); }
+        .cloud3 { top: 50%; animation-duration: 40s; animation-delay: -5s; transform: scale(0.8); opacity: 0.8; }
+        .cloud4 { top: 70%; animation-duration: 55s; animation-delay: -20s; transform: scale(1.2); }
+        .cloud5 { top: 15%; animation-duration: 70s; animation-delay: -45s; transform: scale(2); opacity: 0.9; }
+
+        @keyframes float-cloud {
+            0% { left: -20%; }
+            100% { left: 120%; }
+        }
+
+        /* Night Sky Stars (Only visible in Dark Mode) */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        [data-theme="dark"] .stars {
+            opacity: 1;
+        }
+
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #fff;
+            box-shadow: 0 0 5px #fff;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        /* Navbar */
+        nav {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: var(--border-width) solid var(--border-color);
+            background-color: var(--bg-color);
+            position: relative;
+            z-index: 20;
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            color: var(--highlight);
+            text-shadow: 4px 4px 0px var(--shadow-color);
+            transition: color 0.5s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-shadow: 2px 2px 0px var(--shadow-color);
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--highlight);
+        }
+
+        /* Theme Toggle Button */
+        .theme-btn {
+            background-color: var(--ui-bg);
+            color: var(--text-card);
+            padding: 8px 12px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: 4px 4px 0px var(--shadow-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease, background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
+        .theme-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--shadow-color);
+        }
+
+        /* Hero Section */
+        header {
+            text-align: center;
+            padding: 80px 0;
+            margin-top: 20px;
+        }
+
+        .avatar-box {
+            width: 120px;
+            height: 120px;
+            background-color: var(--highlight);
+            border: var(--border-width) solid var(--border-color);
+            margin: 0 auto 30px auto;
+            box-shadow: 8px 8px 0px var(--shadow-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: bounce 2s infinite;
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+        }
+
+        /* Simple CSS Pixel Character */
+        .pixel-char {
+            width: 40px;
+            height: 40px;
+            background-color: var(--text-card); /* Changes color based on theme */
+            position: relative;
+            transition: background-color 0.5s ease;
+        }
+        
+        .pixel-char::before { /* Eyes */
+            content: '';
+            position: absolute;
+            top: 10px; left: 8px; width: 8px; height: 8px; background: var(--ui-bg);
+            box-shadow: 16px 0 0 var(--ui-bg);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        header h1 {
+            font-size: 3rem;
+            color: var(--highlight);
+            letter-spacing: 2px;
+            transition: color 0.5s ease;
+        }
+
+        header p {
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        /* Projects Section */
+        section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+            color: var(--text-main);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        /* 8-bit Card Style */
+        .card {
+            background-color: var(--ui-bg);
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: 8px 8px 0px var(--shadow-color);
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.1s, box-shadow 0.1s, background-color 0.5s ease, border-color 0.5s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0px var(--shadow-color);
+        }
+
+        .card-img-placeholder {
+            width: 100%;
+            height: 150px;
+            background-color: var(--bg-color);
+            border: var(--border-width) solid var(--border-color);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            text-shadow: 2px 2px 0px var(--shadow-color);
+            font-size: 0.7rem;
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+        }
+
+        .card h3 {
+            color: var(--text-card);
+            text-shadow: none;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            transition: color 0.5s ease;
+        }
+
+        .card p {
+            color: var(--text-card);
+            text-shadow: none;
+            font-size: 0.7rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            transition: color 0.5s ease;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--highlight);
+            color: var(--bg-color); /* Invert text color to background for contrast */
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 0.7rem;
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: 4px 4px 0px var(--shadow-color);
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
+        .btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--shadow-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 40px 20px;
+            border-top: var(--border-width) solid var(--border-color);
+            position: relative;
+            z-index: 10;
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+
+        footer p {
+            font-size: 0.7rem;
+            text-shadow: none;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: var(--highlight);
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 0.8rem;
+            transition: color 0.5s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--text-main);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            .nav-links a:not(.theme-btn) {
+                display: none; /* Hide text links on mobile, keep toggle */
+            }
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Sky Background -->
+    <div class="sky-background">
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3"></div>
+        <div class="cloud cloud4"></div>
+        <div class="cloud cloud5"></div>
+    </div>
+
+    <!-- Night Sky Stars Container -->
+    <div class="stars" id="stars-container">
+        <!-- Stars injected via JS -->
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="container">
+        
+        <!-- Navigation -->
+        <nav>
+            <div class="logo">DAGDUN</div>
+            <div class="nav-links">
+                <a href="#about">START</a>
+                <a href="#projects">STAGES</a>
+                <a href="#contact">CONNECT</a>
+                
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="btn theme-btn" aria-label="Toggle Theme">
+                    <span id="theme-icon">☀️</span> 
+                    <span id="theme-text">SKY</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero / About Section -->
+        <header id="about">
+            <div class="avatar-box">
+                <!-- Abstract 8-bit character -->
+                <div class="pixel-char"></div>
+            </div>
+            <h1>DAGDUN</h1>
+            <p>LVL 99 FRONT-END DEVELOPER</p>
+            <br>
+            <p style="max-width: 600px; margin: 0 auto; color: var(--highlight);">
+                > READY PLAYER ONE.<br>
+                > I build pixel-perfect, interactive web experiences.<br>
+                > Equip: HTML, CSS, JavaScript, React.
+            </p>
+        </header>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2 class="section-title">- QUEST LOG -</h2>
+            
+            <div class="projects-grid">
+                
+                <!-- Project 1 -->
+                <div class="card">
+                    <div class="card-img-placeholder" style="background-color: #8b0000; color: white;">
+                        [IMG_COMMERCE.BMP]
+                    </div>
+                    <h3>Retro Market</h3>
+                    <p>A full-stack e-commerce platform built with an 8-bit aesthetic. Features a shopping cart, user authentication, and secure checkout.</p>
+                    <a href="#" class="btn">PLAY STAGE</a>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="card">
+                    <div class="card-img-placeholder" style="background-color: #006400; color: white;">
+                        [IMG_RPG_ENGINE.PNG]
+                    </div>
+                    <h3>Hero Quest UI</h3>
+                    <p>A web-based RPG user interface created using vanilla JavaScript. Manages inventory, stats, and real-time combat logs.</p>
+                    <a href="#" class="btn">PLAY STAGE</a>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="card">
+                    <div class="card-img-placeholder" style="background-color: #4682b4; color: white;">
+                        [IMG_WEATHER.GIF]
+                    </div>
+                    <h3>Sky API App</h3>
+                    <p>A dynamic weather application that fetches real-time data and changes the UI theme based on the current sky conditions.</p>
+                    <a href="#" class="btn">PLAY STAGE</a>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer / Contact -->
+    <footer id="contact">
+        <h2 style="font-size: 1.5rem; color: var(--highlight); margin-bottom: 20px;">GAME OVER?</h2>
+        <p>CONTINUE YOUR JOURNEY AND REACH OUT:</p>
+        <div class="social-links">
+            <a href="#">[ GITHUB ]</a>
+            <a href="#">[ LINKEDIN ]</a>
+            <a href="#">[ EMAIL ]</a>
+        </div>
+        <p style="margin-top: 30px; opacity: 0.7;">&copy; 2026 DAGDUN. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <!-- Script for Theme Toggle & Star Generation -->
+    <script>
+        // Generate random stars for Dark Mode
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 40; i++) {
+            let star = document.createElement('div');
+            star.classList.add('star');
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starsContainer.appendChild(star);
+        }
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+        const root = document.documentElement;
+
+        // Check for saved user preference
+        const savedTheme = localStorage.getItem('dagdun-theme');
+        if (savedTheme === 'dark') {
+            root.setAttribute('data-theme', 'dark');
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'MOON';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'dark') {
+                // Switch to Light/Sky Theme
+                root.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'SKY';
+                localStorage.setItem('dagdun-theme', 'light');
+            } else {
+                // Switch to Dark/Moonlight Theme
+                root.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'MOON';
+                localStorage.setItem('dagdun-theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>
